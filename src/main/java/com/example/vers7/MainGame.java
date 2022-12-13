@@ -20,11 +20,14 @@ import javafx.stage.Stage;
 import model.*;
 
 import java.io.IOException;
+import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
 
 public class MainGame extends Application implements GameScreen{
-
+    Connection connection;
+    PreparedStatement pst;
+    ResultSet rs;
     public static final int TILE_SIZE =50;
     private List<PawnComponent> pawnComponentList = new ArrayList<PawnComponent>(GameSession.MAX_PLAYERS);
     private GameSession gameSession;
@@ -46,7 +49,7 @@ public class MainGame extends Application implements GameScreen{
     private Label scoreLabel;
 
     private Scene scene;
-    public MainGame(Stage stage, GameSession gameSession, List<Player> players) {
+    public MainGame(Stage stage, GameSession gameSession, List<HumanPlayer> players) {
         setupModel(gameSession, gameSession.getBoard(), players);
         currentTurnLabel = new Label();
         wallsLabel = new Label();
@@ -238,7 +241,7 @@ public class MainGame extends Application implements GameScreen{
         Pane panel = new Pane();
 
         int offset = Settings.getSingleton().getBoardWidth();
-        currentTurnLabel.setText("Player "+gameSession.getPlayer(turnIndex).getName() + "'s turn");
+        currentTurnLabel.setText("Player "+gameSession.getPlayer(turnIndex).getUsername() + "'s turn");
         currentTurnLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
         currentTurnLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
         wallsLabel.setText("Walls left: " + gameSession.getPlayer(turnIndex).getWalls());
@@ -271,7 +274,7 @@ public class MainGame extends Application implements GameScreen{
             turnIndex = 0;
             System.out.println("Next turn: " + pawnTypes[turnIndex]);
         }
-        currentTurnLabel.setText(gameSession.getPlayer(turnIndex).getName() + "'s turn");
+        currentTurnLabel.setText(gameSession.getPlayer(turnIndex).getUsername() + "'s turn");
         currentTurnLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
         wallsLabel.setText("Walls left: " + gameSession.getPlayer(turnIndex).getWalls());
         wallsLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
@@ -283,10 +286,10 @@ public class MainGame extends Application implements GameScreen{
     }
 
 
-    private void setupModel(GameSession gs, Board board, List<Player> players) {
+    private void setupModel(GameSession gs, Board board, List<HumanPlayer> players) {
         Settings settings = Settings.getSingleton();
         gameSession = new GameSession(board);
-        for(Player player : players) {
+        for(HumanPlayer player : players) {
             gameSession.addPlayer(player);
         }
         height = settings.getBoardHeight();
@@ -334,12 +337,63 @@ public class MainGame extends Application implements GameScreen{
 
 
                 //Check if the pawn is in a winning position
+
+                try {
+                    Class.forName("com.mysql.jdbc.Driver");
+                } catch (ClassNotFoundException ex) {
+                    throw new RuntimeException(ex);
+                }
+                try {
+                    connection = DriverManager.getConnection("jdbc:mysql://localhost/maze", "root", "");
+                } catch (SQLException ex) {
+                    throw new RuntimeException(ex);
+                }
+
+
                 switch(type) {
                     case RED:
 
                         if(newY == 0) {
                             gameSession.setWinner(gameSession.getPlayer(turnIndex));
+                            String uname = gameSession.getPlayer(turnIndex).getUsername();
                             gameSession.getPlayer(turnIndex).getStatistics().updateScore(100);
+                            try {
+                                pst = connection.prepareStatement("select score from players where username = ? ");
+                                pst.setString(1,uname );
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            try {
+                                rs = pst.executeQuery();
+                                if (rs.next()) {
+                                    int lastScore= Integer.parseInt(rs.getString("score"));
+                                    System.out.println(lastScore);
+                                    int newScore = gameSession.getPlayer(turnIndex).getStatistics().getScore();
+                                    if(lastScore <newScore ){
+
+                                        try {
+                                            pst = connection.prepareStatement("update players set score = ? where username = ? ");
+                                            pst.setString(1,String.valueOf(newScore) );
+                                            pst.setString(2,uname );
+                                            pst.executeUpdate();
+
+                                        } catch (SQLException ex) {
+                                            throw new RuntimeException(ex);
+                                        }
+
+
+
+                                    }
+                                }
+
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+
+
+
+
+
 
                             endGame(gameSession);
                         }
@@ -347,8 +401,36 @@ public class MainGame extends Application implements GameScreen{
                     case BLUE:
                         if(newY == 8) {
                             gameSession.setWinner(gameSession.getPlayer(turnIndex));
+                            String uname = gameSession.getPlayer(turnIndex).getUsername();
                             gameSession.getPlayer(turnIndex).getStatistics().updateScore(100);
+                            try {
+                                pst = connection.prepareStatement("select score from players where username = ? ");
+                                pst.setString(1,uname );
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
+                            try {
+                                rs = pst.executeQuery();
+                                if (rs.next()) {
+                                    int lastScore= Integer.parseInt(rs.getString("score"));
+                                    System.out.println(lastScore);
+                                    int newScore = gameSession.getPlayer(turnIndex).getStatistics().getScore();
+                                    if(lastScore <newScore ){
 
+                                        try {
+                                            pst = connection.prepareStatement("update players set score = ? where username = ? ");
+                                            pst.setString(1,String.valueOf(newScore) );
+                                            pst.setString(2,uname );
+                                            pst.executeUpdate();
+
+                                        } catch (SQLException ex) {
+                                            throw new RuntimeException(ex);
+                                        }
+                                    }
+                                }
+                            } catch (SQLException ex) {
+                                throw new RuntimeException(ex);
+                            }
                             endGame(gameSession);
                         }
                         break;

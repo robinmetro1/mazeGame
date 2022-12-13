@@ -14,7 +14,7 @@ public class GameSession {
 	
 	public static int MAX_PLAYERS = 2;
 	private Board board;
-	private List<Player> players;
+	private List<HumanPlayer> players;
 
 	private Player winner;
 	
@@ -26,7 +26,7 @@ public class GameSession {
 	
 	public GameSession(Board board) {
 		this.board = board;
-		this.players = new ArrayList<Player>();
+		this.players = new ArrayList<HumanPlayer>();
 		this.moves = new ArrayDeque<Move>();
 
 	}
@@ -45,7 +45,7 @@ public class GameSession {
 	 * @throws IllegalStateException when more players than the limit are added
 	 * @throws IllegalArgumentException if the player is null
 	 */
-	public void addPlayer(Player player) {
+	public void addPlayer(HumanPlayer player) {
 		if(players.size() > MAX_PLAYERS) {
 			throw new IllegalStateException("There can only be a maximum of " + MAX_PLAYERS + " players");
 		}
@@ -59,7 +59,7 @@ public class GameSession {
 	 * Gets all the players in this session.
 	 * @return the players in this session
 	 */
-	public List<Player> getPlayers() {
+	public List<HumanPlayer> getPlayers() {
 		return players;
 	}
 	

@@ -24,15 +24,15 @@ public class StatsController  extends AbstractController implements Initializabl
     @FXML
     public void onMenuBtn(ActionEvent action) {
         Stage stage = (Stage) winnerLabel.getScene().getWindow();
-        loadScreen(stage, "menu.fxml");
+        loadScreen(stage, "com/example/vers7/menu.fxml");
     }
 
     public void setGameSession(GameSession gs) {
         this.gameSession = gs;
-        winnerLabel.setText(gameSession.getWinner().getName() + " won!");
+        winnerLabel.setText(gameSession.getWinner().getUsername() + " won!");
         for(Player p : gs.getPlayers()) {
             statsArea.appendText("---------- \n");
-            statsArea.appendText(p.getName() + "'s stats \n");
+            statsArea.appendText(p.getUsername() + "'s stats \n");
             statsArea.appendText("Walls used: " + p.getStatistics().getNumOfWallsUsed() + "\n");
             statsArea.appendText("Total moves: " + p.getStatistics().getTotalMoves() + "\n");
             statsArea.appendText("Score : " + p.getStatistics().getScore() + "\n");

@@ -17,6 +17,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
+import static com.example.vers7.LoggedIncontroller.*;
+
 public class MenuController extends AbstractController {
     private Stage stage;
     private Scene scene;
@@ -30,9 +32,9 @@ public class MenuController extends AbstractController {
     @FXML
     void onplayButton(ActionEvent event) throws IOException {
         //  Menu.setRoot("mainGame");
-        List<Player> players = new ArrayList<Player>(2);
-        Player player1 = new HumanPlayer("1", "#FF0000");
-        Player player2 = new HumanPlayer("2", "#0000FF");
+        List<HumanPlayer> players = new ArrayList<HumanPlayer>(2);
+        HumanPlayer player1 = new HumanPlayer("1", "#FF0000",getUname1(),getPass1());
+        HumanPlayer player2 = new HumanPlayer("2", "#0000FF",getUname2(),getPass2());
         players.add(player1);
         players.add(player2);
         Stage stage = (Stage) exitButton.getScene().getWindow();
@@ -51,7 +53,7 @@ public class MenuController extends AbstractController {
 //        loadScreen(stage, "mainGame.fxml");
     }
 
-    private void setupGame(List<Player> players) {
+    private void setupGame(List<HumanPlayer> players) {
         Stage stage = new Stage();
         Board board = new Board(Settings.getSingleton().getBoardHeight(), Settings.getSingleton().getBoardWidth());
         GameSession gameSession = new GameSession(board);

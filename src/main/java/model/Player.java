@@ -20,7 +20,7 @@ public abstract class Player {
 	 * Generates UUID 
 	 * @param name
 	 */
-	public Player(String name, String pawnColour,String username){
+	public Player(String name, String pawnColour){
 		//Generate UUID
 		
 		//Initialise values.
@@ -87,5 +87,11 @@ public abstract class Player {
 
 	public int getScore() {
 		return score;
+	}
+
+
+	public String getUsername() {
+		return username;
+
 	}
 }

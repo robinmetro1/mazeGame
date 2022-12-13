@@ -4,7 +4,6 @@ import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.image.Image;
 import javafx.stage.Stage;
 
 import java.io.IOException;
@@ -26,7 +25,7 @@ public class Menu extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-       Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
+       Parent root = FXMLLoader.load(getClass().getResource("/com/example/vers7/login.fxml"));
       // stage.getIcons().add(new Image("2.png"));
    //    stage.getIcons().add(new Image("resources/images/2.png"));
 
