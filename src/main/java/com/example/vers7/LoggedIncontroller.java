@@ -4,8 +4,10 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 
 import javafx.fxml.FXMLLoader;
+import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.text.Text;
 
@@ -13,6 +15,7 @@ import java.awt.*;
 
 import javafx.scene.control.TextField;
 import javafx.stage.Stage;
+import javafx.stage.Window;
 
 
 import java.io.IOException;
@@ -25,14 +28,6 @@ public class LoggedIncontroller {
     PreparedStatement pst;
      ResultSet rs;
 
-    @FXML
-    private Text done;
-
-    @FXML
-    private Label lbl_close;
-
-    @FXML
-    private Label lblErrors;
 
     @FXML
     private PasswordField txtPassword;
@@ -85,7 +80,11 @@ public class LoggedIncontroller {
     static String uname2;
     static String pass2;
      int nbPlayers=0;
+    @FXML
+    private Button login1btn;
 
+    @FXML
+    private Button login2btn;
 
 
 
@@ -111,6 +110,7 @@ public class LoggedIncontroller {
                         System.out.println(uname1);
                         setPass1(pass);
                         nbPlayers++;
+                    login1btn.setDisable(true);
                 } else {
                     txtPassword.setText("");
                     txtUsername.setText("");
@@ -124,7 +124,7 @@ public class LoggedIncontroller {
 
 
 
-    public void login2(javafx.event.ActionEvent actionEvent) throws ClassNotFoundException, SQLException, IOException {
+    public void login2(ActionEvent actionEvent) throws ClassNotFoundException, SQLException, IOException {
 
         String uname = txtUsername.getText();
         String pass = txtPassword.getText();
@@ -141,10 +141,14 @@ public class LoggedIncontroller {
             rs = pst.executeQuery();
             if (rs.next()) {
                 txtwarning.setText("Login2 Success");
+                login2btn.setDisable(true);
+
                 setUname2(uname);
                 System.out.println(uname2);
                 setPass2(pass);
                 nbPlayers++;
+                txtPassword.setText("");
+                txtUsername.setText("");
             } else {
 
                 txtPassword.setText("");
@@ -153,8 +157,13 @@ public class LoggedIncontroller {
 
             }
         }
+
         System.out.println(nbPlayers);
         if(nbPlayers==2){
+            Window window =   ((Node)(actionEvent.getSource())).getScene().getWindow();
+            if (window instanceof Stage){
+                ((Stage) window).close();
+            };
             Parent root = FXMLLoader.load(getClass().getResource("menu.fxml"));
             Stage stage = new Stage();
             scene = new Scene(root);
@@ -190,6 +199,8 @@ public class LoggedIncontroller {
             pst.executeUpdate();
 
             txtwarning.setText("Added Successfully");
+            txtPassword.setText("");
+            txtUsername.setText("");
 
 
 

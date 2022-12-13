@@ -6,18 +6,27 @@ import com.example.vers7.components.PawnComponent;
 import com.example.vers7.components.TileComponent;
 import com.example.vers7.components.VerticalWallComponent;
 import javafx.application.Application;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
+import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
+import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.TableColumn;
+import javafx.scene.control.TableView;
+import javafx.scene.control.cell.PropertyValueFactory;
+import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
 import javafx.scene.text.FontWeight;
 import javafx.stage.Stage;
 import model.*;
+import oracle.sql.ANYDATA;
 
 import java.io.IOException;
 import java.sql.*;
@@ -48,15 +57,41 @@ public class MainGame extends Application implements GameScreen{
 
     private Label scoreLabel;
 
+    private Button bestScorebtn;
+
+
+    @FXML
+    private TableColumn<HumanPlayer, String> col_score;
+
+    @FXML
+    private TableColumn<HumanPlayer, String> col_username;
+
+    @FXML
+    private TableView<HumanPlayer> table;
+
     private Scene scene;
     public MainGame(Stage stage, GameSession gameSession, List<HumanPlayer> players) {
+
+        try {
+            Class.forName("com.mysql.jdbc.Driver");
+        } catch (ClassNotFoundException ex) {
+            throw new RuntimeException(ex);
+        }
+        try {
+            connection = DriverManager.getConnection("jdbc:mysql://localhost/maze", "root", "");
+        } catch (SQLException ex) {
+            throw new RuntimeException(ex);
+        }
+
+
+
         setupModel(gameSession, gameSession.getBoard(), players);
         currentTurnLabel = new Label();
         wallsLabel = new Label();
         scoreLabel = new Label();
 
         scene = new Scene(createContent());
-        //stage.getIcons().add(new Image("/2.png"));
+     //   stage.getIcons().add(new Image("/2.png"));
         stage.setTitle("MAZE");
         stage.setScene(scene);
         stage.show();
@@ -64,7 +99,7 @@ public class MainGame extends Application implements GameScreen{
 
     private Parent createContent() {
         Pane root = new Pane();
-        root.setPrefSize((width * TILE_SIZE) + 85, height * TILE_SIZE);
+        root.setPrefSize((width * TILE_SIZE) + 150, height * TILE_SIZE);
         root.getChildren().addAll(tileGroup, pawnGroup, horizontalWallGroup, verticalWallGroup,infoPanel());
 
         //Add tiles to the board
@@ -240,28 +275,84 @@ public class MainGame extends Application implements GameScreen{
     private Node infoPanel() {
         Pane panel = new Pane();
 
-        int offset = Settings.getSingleton().getBoardWidth();
-        currentTurnLabel.setText("Player "+gameSession.getPlayer(turnIndex).getUsername() + "'s turn");
+        currentTurnLabel.setText(gameSession.getPlayer(turnIndex).getUsername() + "'s turn");
         currentTurnLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
-        currentTurnLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        currentTurnLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         wallsLabel.setText("Walls left: " + gameSession.getPlayer(turnIndex).getWalls());
         wallsLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
+        wallsLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
+
         wallsLabel.setTranslateY(50);
 
         scoreLabel.setText("SCORE: " + gameSession.getPlayer(turnIndex).getScore());
         scoreLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
-        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
-
+        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 14));
         scoreLabel.setTranslateY(100);
+        bestScorebtn = new Button("Best Score");
+        bestScorebtn.setTranslateY(200);
+        bestScorebtn.setTranslateX(30);
+
+        bestScorebtn.setStyle("-fx-background-color: slateblue; -fx-text-fill: white ;-fx-font-size: 14pt;");
+
+        bestScorebtn.setOnAction(value ->  {
+            try {
+                showScores();
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            } catch (SQLException e) {
+                throw new RuntimeException(e);
+            }
+
+        });
 
 
-
-        panel.getChildren().addAll(currentTurnLabel, wallsLabel,scoreLabel);
+        panel.getChildren().addAll(currentTurnLabel, wallsLabel,scoreLabel,bestScorebtn);
 
             panel.setTranslateX(450);
 
         return panel;
     }
+
+    private void showScores() throws IOException, SQLException {
+        Parent root = FXMLLoader.load(getClass().getResource("bestScore.fxml"));
+        Stage stage = new Stage();
+        scene = new Scene(root);
+        stage.setTitle("MAZE");
+        stage.setScene(scene);
+        stage.show();
+        pst = connection.prepareStatement("select username ,score from players");
+        rs = pst.executeQuery();
+        ObservableList<HumanPlayer> playersList = FXCollections.observableArrayList();
+
+        if (rs.next()) {
+            HumanPlayer humanPlayer =new HumanPlayer();
+            humanPlayer.setUsername(rs.getString("username"));
+            humanPlayer.setScore(rs.getInt("score"));
+
+            col_username.setCellValueFactory(new PropertyValueFactory<>("username"));
+            col_score.setCellValueFactory(new PropertyValueFactory<>("score"));
+
+
+
+            playersList.add(humanPlayer);
+
+
+
+
+
+
+        }
+
+
+    }
+
+
+
+
+
+
+
+
 
 
 
@@ -281,7 +372,7 @@ public class MainGame extends Application implements GameScreen{
 
         scoreLabel.setText("SCORE: " + gameSession.getPlayer(turnIndex).getScore());
         scoreLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
-        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 18));
 
     }
 
@@ -338,16 +429,6 @@ public class MainGame extends Application implements GameScreen{
 
                 //Check if the pawn is in a winning position
 
-                try {
-                    Class.forName("com.mysql.jdbc.Driver");
-                } catch (ClassNotFoundException ex) {
-                    throw new RuntimeException(ex);
-                }
-                try {
-                    connection = DriverManager.getConnection("jdbc:mysql://localhost/maze", "root", "");
-                } catch (SQLException ex) {
-                    throw new RuntimeException(ex);
-                }
 
 
                 switch(type) {

@@ -14,8 +14,14 @@ public class HumanPlayer extends Player {
 		this.username =username;
 		this.password = password;
 	}
+	public HumanPlayer() {
 
-	 public String getUsername() {
+	}
+
+
+
+
+	public String getUsername() {
 		return username;
 	}
 
@@ -31,4 +37,7 @@ public class HumanPlayer extends Player {
 		this.password = password;
 	}
 
+	public int setScore(int score) {
+		return score;
+	}
 }

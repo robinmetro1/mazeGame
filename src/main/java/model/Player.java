@@ -30,6 +30,9 @@ public abstract class Player {
 		this.pawnColour = pawnColour;
 
 	}
+	public Player(){
+
+	}
 
 
 	/**
@@ -93,5 +96,8 @@ public abstract class Player {
 	public String getUsername() {
 		return username;
 
+	}
+	public int setScore(int score) {
+		return score;
 	}
 }
