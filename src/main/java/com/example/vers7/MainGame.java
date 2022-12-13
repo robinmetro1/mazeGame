@@ -11,9 +11,7 @@ import javafx.scene.Group;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Button;
 import javafx.scene.control.Label;
-import javafx.scene.image.Image;
 import javafx.scene.layout.Pane;
 import javafx.scene.paint.Color;
 import javafx.scene.text.Font;
@@ -44,11 +42,16 @@ public class MainGame extends Application implements GameScreen{
     private Group verticalWallGroup = new Group();
     private Label currentTurnLabel;
     private Label wallsLabel;
+
+    private Label scoreLabel;
+
     private Scene scene;
     public MainGame(Stage stage, GameSession gameSession, List<Player> players) {
         setupModel(gameSession, gameSession.getBoard(), players);
         currentTurnLabel = new Label();
         wallsLabel = new Label();
+        scoreLabel = new Label();
+
         scene = new Scene(createContent());
         //stage.getIcons().add(new Image("/2.png"));
         stage.setTitle("MAZE");
@@ -135,6 +138,10 @@ public class MainGame extends Application implements GameScreen{
                         }
                         gameSession.getPlayer(turnIndex).getStatistics().incrementWallsUsed();
                         gameSession.getPlayer(turnIndex).decrementWalls();
+                        gameSession.getPlayer(turnIndex).updateScore(-5);
+                        gameSession.getPlayer(turnIndex).getStatistics().updateScore(-5);
+
+
                         updateTurn();
                     } else if(e.isSecondaryButtonDown()) {
                         {
@@ -209,6 +216,10 @@ public class MainGame extends Application implements GameScreen{
                         }
                         gameSession.getPlayer(turnIndex).getStatistics().incrementWallsUsed();
                         gameSession.getPlayer(turnIndex).decrementWalls();
+                        gameSession.getPlayer(turnIndex).updateScore(-5);
+                        gameSession.getPlayer(turnIndex).getStatistics().updateScore(-5);
+
+
                         updateTurn();
                     } else if(e.isSecondaryButtonDown()) {
                         {
@@ -233,14 +244,19 @@ public class MainGame extends Application implements GameScreen{
         wallsLabel.setText("Walls left: " + gameSession.getPlayer(turnIndex).getWalls());
         wallsLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
         wallsLabel.setTranslateY(50);
-        panel.getChildren().addAll(currentTurnLabel, wallsLabel);
-        if(offset == 7) {
-            panel.setTranslateX(350);
-        } else if(offset == 11) {
-            panel.setTranslateX(550);
-        } else {
+
+        scoreLabel.setText("SCORE: " + gameSession.getPlayer(turnIndex).getScore());
+        scoreLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
+        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+
+        scoreLabel.setTranslateY(100);
+
+
+
+        panel.getChildren().addAll(currentTurnLabel, wallsLabel,scoreLabel);
+
             panel.setTranslateX(450);
-        }
+
         return panel;
     }
 
@@ -259,6 +275,11 @@ public class MainGame extends Application implements GameScreen{
         currentTurnLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
         wallsLabel.setText("Walls left: " + gameSession.getPlayer(turnIndex).getWalls());
         wallsLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
+
+        scoreLabel.setText("SCORE: " + gameSession.getPlayer(turnIndex).getScore());
+        scoreLabel.setTextFill(Color.valueOf(gameSession.getPlayer(turnIndex).getPawnColour()));
+        scoreLabel.setFont(Font.font("Verdana", FontWeight.BOLD, 12));
+
     }
 
 
@@ -308,23 +329,31 @@ public class MainGame extends Application implements GameScreen{
                 pawn.move(newX, newY);
                 gameSession.getBoard().getTile(currentTile.getX(), currentTile.getY()).setContainsPawn(false);
                 gameSession.getBoard().getTile(nextTile.getX(), nextTile.getY()).setContainsPawn(true);
-                //Check if the pawn is in a winning position on the board
+                gameSession.getPlayer(turnIndex).updateScore(10);
+                gameSession.getPlayer(turnIndex).getStatistics().updateScore(10);
+
+
+                //Check if the pawn is in a winning position
                 switch(type) {
                     case RED:
 
                         if(newY == 0) {
                             gameSession.setWinner(gameSession.getPlayer(turnIndex));
+                            gameSession.getPlayer(turnIndex).getStatistics().updateScore(100);
+
                             endGame(gameSession);
                         }
                         break;
                     case BLUE:
                         if(newY == 8) {
                             gameSession.setWinner(gameSession.getPlayer(turnIndex));
+                            gameSession.getPlayer(turnIndex).getStatistics().updateScore(100);
+
                             endGame(gameSession);
                         }
                         break;
                 }
-                //update whose turn it is
+                //update turn
                 updateTurn();
             } else {
                 pawn.reverseMove();

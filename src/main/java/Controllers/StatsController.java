@@ -35,6 +35,8 @@ public class StatsController  extends AbstractController implements Initializabl
             statsArea.appendText(p.getName() + "'s stats \n");
             statsArea.appendText("Walls used: " + p.getStatistics().getNumOfWallsUsed() + "\n");
             statsArea.appendText("Total moves: " + p.getStatistics().getTotalMoves() + "\n");
+            statsArea.appendText("Score : " + p.getStatistics().getScore() + "\n");
+
             statsArea.appendText("---------- \n");
         }
     }

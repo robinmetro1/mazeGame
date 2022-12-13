@@ -26,7 +26,7 @@ public class Menu extends Application {
     @Override
     public void start(Stage stage) throws IOException {
 
-       Parent root = FXMLLoader.load(getClass().getResource("menu.fxml"));
+       Parent root = FXMLLoader.load(getClass().getResource("login.fxml"));
       // stage.getIcons().add(new Image("2.png"));
    //    stage.getIcons().add(new Image("resources/images/2.png"));
 

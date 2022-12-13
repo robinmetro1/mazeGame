@@ -11,8 +11,10 @@ public class Settings {
 	
 
 	private int walls;
-	//private boolean showLabels;
-	//private boolean showTrail;
+
+	private int score;
+
+
 	private int boardWidth;
 	private int boardHeight;
 	private int tileSize;
@@ -22,10 +24,7 @@ public class Settings {
 		reset();
 	}
 	
-	/**
-	 * Gets the {@link Settings} singleton.
-	 * @return the instance
-	 */
+
 	public static Settings getSingleton() {
 		if(instance == null) {
 			instance = new Settings();
@@ -33,70 +32,32 @@ public class Settings {
 		return instance;
 	}
 
-	/**
-	 * Resets all  to default.
-	 */
 	public void reset() {
-		// Set number of walls setting
 		setWalls(10);
-		//Set board size
 		setBoardHeight(9);
 		setBoardWidth(9);
-		//Set tile size
-		setTileSize(50);			
+		setTileSize(50);
 	}
 	
 
 
 
-	/**
-	 * Gets the number of {@link Wall walls}.
-	 * @return the number of walls.
-	 */
+
 	public int getWalls() {
 		return walls;
 	}
 
-	/**
-	 * Sets the number of {@link Wall walls}.
-	 * @param walls the number of walls
-	 */
+
 	public void setWalls(int walls) {
 		this.walls = walls;
 	}
 
-	/**
-	 * Whether the labels should show.
-	 * @return whether the labels should show
 
-	public boolean isShowLabels() {
-		return showLabels;
-	}
-	 */
-
-
-	/**
-	 * Sets whether to show label above pawns.
-	 * @param showLabels whether to show labels
-
-	public void setShowLabels(boolean showLabels) {
-		this.showLabels = showLabels;
-	}
-	 */
-
-
-	/**
-	 * Gets the width of the {@link Board}.
-	 * @return the width
-	 */
 	public int getBoardWidth() {
 		return boardWidth;
 	}
 
-	/**
-	 * Sets the width of the {@link Board}.
-	 * @param boardWidth the width
-	 */
+
 	public void setBoardWidth(int boardWidth) {
 		if(boardWidth % 2 == 0) {
 			throw new IllegalArgumentException("The board width must be odd.");
@@ -104,39 +65,12 @@ public class Settings {
 		this.boardWidth = boardWidth;
 	}
 
-	/**
-	 * Whether the trail should show or not.
-	 * @return whether the trail should show
 
-	public boolean isShowTrail() {
-		return showTrail;
-	}
-	 */
-
-
-	/**
-	 * Sets whether to show the ghost trail.
-	 * @param showTrail whether to show the trail or not
-
-	public void setShowTrail(boolean showTrail) {
-		this.showTrail = showTrail;
-	}
-	 */
-
-
-	/**
-	 * Gets the height of the {@link Board}.
-	 * @return the height
-	 */
 	public int getBoardHeight() {
 		return boardHeight;
 	}
 
-	/**
-	 * Sets the height of the {@link Board}
-	 * @param boardHeight the height
-	 * @throws IllegalArgumentException if the board height is event
-	 */
+
 	public void setBoardHeight(int boardHeight) {
 		if(boardHeight % 2 == 0) {
 			throw new IllegalArgumentException("The board height must be odd.");
@@ -144,19 +78,21 @@ public class Settings {
 		this.boardHeight = boardHeight;
 	}
 
-	/**
-	 * Gets the size of the {@link Tile}.
-	 * @return the size
-	 */
+
 	public int getTileSize() {
 		return tileSize;
 	}
 
-	/**
-	 * Sets the {@link Tile} size setting.
-	 * @param tileSize the size
-	 */
+
 	public void setTileSize(int tileSize) {
 		this.tileSize = tileSize;
+	}
+
+	public int getScore() {
+		return score;
+	}
+
+	public void setScore(int score) {
+		this.score = score;
 	}
 }

@@ -5,16 +5,22 @@ package model;
  */
 public abstract class Player {
 	private String name;
+
+	private String username;
+
+	private String password;
+
 	private int walls;
 	private Statistics stats;
 	private String pawnColour;
+	 private int score;
 	
 	/**
 	 * Creates a new Player by initialising its name and pawn
 	 * Generates UUID 
 	 * @param name
 	 */
-	public Player(String name, String pawnColour){
+	public Player(String name, String pawnColour,String username){
 		//Generate UUID
 		
 		//Initialise values.
@@ -22,6 +28,7 @@ public abstract class Player {
 		walls = Settings.getSingleton().getWalls();
 		this.stats = new Statistics();
 		this.pawnColour = pawnColour;
+
 	}
 
 
@@ -51,18 +58,10 @@ public abstract class Player {
 		}
 		System.out.println(name + ": " + walls + " walls left ");
 		walls--;
-	}	
-	
-	/**
-	 * Increments the number of walls that a player has by one.
-	 * @throws IllegalStateException if the number of walls are at maximum
-	 */
-	public void incrementWalls() {
-		if(walls == Settings.getSingleton().getWalls()) {
-			throw new IllegalStateException("The number of walls are already at maximum.");
-		}
-		walls++;
-	}	
+	}
+
+
+
 	
 	/**
 	 * Get this player's {@link Statistics}
@@ -80,5 +79,13 @@ public abstract class Player {
 		return pawnColour;
 	}
 
+	public void updateScore(int s){
+		score+=s;
 
+	}
+
+
+	public int getScore() {
+		return score;
+	}
 }

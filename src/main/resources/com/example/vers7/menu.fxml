@@ -11,7 +11,7 @@
    <children>
       <Pane layoutX="122.0" prefHeight="400.0" prefWidth="356.0" style="-fx-background-color: 00E0D4;">
          <children>
-            <Button fx:id="exitButton" layoutX="127.0" layoutY="337.0" mnemonicParsing="false" prefHeight="49.0" prefWidth="104.0" style="-fx-background-color: transparent;" text="EXIT">
+            <Button fx:id="exitButton" layoutX="127.0" layoutY="337.0" mnemonicParsing="false" onAction="#onExitBtnPress" prefHeight="49.0" prefWidth="104.0" style="-fx-background-color: transparent;" text="EXIT">
                <font>
                   <Font size="21.0" />
                </font>
